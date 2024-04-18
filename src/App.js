@@ -3,6 +3,8 @@ import "./App.css";
 import Home from "./components/Home";
 import { checkWin } from "./lib/win-functions";
 
+// @TODO - no action in first cpu turn
+
 function App() {
   const [divValues, setDivValues] = useState([
     {
