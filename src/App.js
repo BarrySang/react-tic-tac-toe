@@ -35,13 +35,10 @@ function App() {
   ]);
   const [currentTurn, setCurrentTurn] = useState(1);
   const [selectedCell, setSelectedCell] = useState();
-  const [cpuChoice, setCPUChoice] = useState();
   const [gameOver, setGameOver] = useState(false);
   const [gameStateText, setgameStateText] = useState(
     "Player " + currentTurn + "'s turn"
   );
-  const [player1Positions, setPlayer1Positions] = useState([]);
-  const [player2Positions, setPlayer2Positions] = useState([]);
 
   const turnLetter = {
     1: "X",
@@ -76,21 +73,14 @@ function App() {
 
   // check for win and change turn after a player's action
   useEffect(() => {
-    // check if game is over
-    if (isGameOver(divValues)) {
-      console.log("game over");
+    // check if all cells have been filled and no player has won
+    if (boardFilled(divValues) && !playerWins(divValues)) {
+      setgameStateText("stalemate");
+      setGameOver(true);
+    } else if (playerWins(divValues)) {
       setgameStateText(`player ${currentTurn} wins`);
       // disable actions on board and display 'play again' option
-      setGameOver("true");
-
-      const elements = getGridElements();
-      console.log(elements);
-      // elements.forEach((element) => {
-      //   element.removeEventListener("click", handleCellClick);
-      // });
-      // console.log(elements);
-
-      // setgameStateText('game over')
+      setGameOver(true);
     } else {
       toggleTurn();
     }
@@ -114,17 +104,6 @@ function App() {
     setSelectedCell(e.target.id);
   }
 
-  // get grid elements
-  function getGridElements() {
-    const elements = [];
-    for (let i = 0; i < 9; i++) {
-      const element = document.getElementById(i);
-      elements.push(element);
-    }
-
-    return elements;
-  }
-
   /**
    *
    * @param {array} cells
@@ -142,6 +121,28 @@ function App() {
     }
 
     return false;
+  }
+
+  function playerWins(cells) {
+    if (
+      checkWin(
+        divValues,
+        turnLetter[currentTurn],
+        getObjectPositions(turnLetter[currentTurn])
+      )
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  function boardFilled(cells) {
+    if (atLeastOneCellEmpty(cells)) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   function isGameOver(cells) {
@@ -177,27 +178,6 @@ function App() {
     }
   }
 
-  // change cell content
-  function changeCellContent() {
-    if (selectedCell) {
-      let actualSelectedCell = parseInt(selectedCell) + 1;
-
-      let newDivValues = divValues.map((divValue) => {
-        if (divValue[actualSelectedCell]) {
-          return {
-            ...divValue,
-            [actualSelectedCell]: turnLetter[currentTurn],
-          };
-        } else {
-          return divValue;
-        }
-      });
-
-      // console.log(newDivValues)
-      setDivValues(newDivValues);
-    }
-  }
-
   /**
    * check if all cells are filled
    * @param {array} cells
@@ -210,8 +190,6 @@ function App() {
 
       return key === value;
     });
-
-    return true;
   }
 
   // function to get all indices of objects with the given values
