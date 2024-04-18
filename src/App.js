@@ -35,10 +35,11 @@ function App() {
   ]);
   const [currentTurn, setCurrentTurn] = useState(1);
   const [selectedCell, setSelectedCell] = useState();
-  const [gameOver, setGameOver] = useState(false);
+  const [gameOver, setGameOver] = useState(true);
   const [gameStateText, setgameStateText] = useState(
     "Player " + currentTurn + "'s turn"
   );
+  const [gameHistory, setGameHistory] = useState([]);
 
   const turnLetter = {
     1: "X",
@@ -79,12 +80,19 @@ function App() {
       setGameOver(true);
     } else if (playerWins(divValues)) {
       setgameStateText(`player ${currentTurn} wins`);
+      setGameHistory((prevHistory) => {
+        return [...prevHistory, currentTurn];
+      });
       // disable actions on board and display 'play again' option
       setGameOver(true);
     } else {
       toggleTurn();
     }
   }, [divValues]);
+
+  useEffect(() => {
+    console.log(gameHistory);
+  }, [gameHistory]);
 
   // listen for change in turn
   useEffect(() => {
@@ -232,9 +240,57 @@ function App() {
     }
   }
 
+  function startGame() {
+    setGameOver(false);
+    if (gameHistory.length) {
+      console.log(gameHistory.length);
+      resetCells();
+    }
+  }
+
+  function resetCells() {
+    setDivValues([
+      {
+        1: "1",
+      },
+      {
+        2: "2",
+      },
+      {
+        3: "3",
+      },
+      {
+        4: "4",
+      },
+      {
+        5: "5",
+      },
+      {
+        6: "6",
+      },
+      {
+        7: "7",
+      },
+      {
+        8: "8",
+      },
+      {
+        9: "9",
+      },
+    ]);
+  }
+
+  function restartGame() {
+    resetCells();
+
+    setGameOver(true);
+  }
+
   return (
     <div className="app-container">
       <Home
+        restartGame={restartGame}
+        startGame={startGame}
         isGameOver={isGameOver}
         currentTurn={currentTurn}
         divValues={divValues}

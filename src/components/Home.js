@@ -10,14 +10,20 @@ function Home({
   currentTurn,
   gameStateText,
   gameOver,
+  startGame,
+  restartGame,
+  gameHistory,
 }) {
   return (
     <div>
       <h1>Tic-tac-Toe</h1>
-      <p>Start game</p>
 
+      {gameOver ? (
+        <button onClick={startGame}>Start game</button>
+      ) : (
+        <button onClick={restartGame}>Restart Game</button>
+      )}
       <p>{gameStateText}</p>
-
       <Grid
         gameOver={gameOver}
         handleCellClick={handleCellClick}
